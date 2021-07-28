@@ -1,6 +1,5 @@
 import pygame
 from spritesheet import Spritesheet
-import keyboard
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):

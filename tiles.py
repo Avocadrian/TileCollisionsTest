@@ -1,4 +1,4 @@
-import pygame, csv, os, random, keyboard, math
+import pygame, csv, os, random, math
 tiles = 0
 
 class Tile(pygame.sprite.Sprite):
