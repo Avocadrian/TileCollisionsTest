@@ -17,17 +17,19 @@ spritesheet = Spritesheet('spritesheet.png')
 player = Player()
 #################################### LOAD THE LEVEL #######################################
 map = TileMap('test_level.csv', spritesheet )
-player.position.x, player.position.y = 0, 0
+player.position.x, player.position.y = 0, -10
+dt = clock.tick(60)
 
 ################################# GAME LOOP ##########################
 while running:
-    print(player.position.y)
-#    player.position.y = 105
-    print("dt")
+#    print(player.position.y)
+#    print(player.velocity.y)
+#    player.position.y = 10
+#    print("dt")
     dt = clock.tick(60)
-    print(dt)
+#    print(dt)
     dt = dt * .001 * TARGET_FPS
-    print(dt)
+#    print(dt)
     ################################# CHECK PLAYER INPUT #################################
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -37,8 +39,14 @@ while running:
                 player.LEFT_KEY = True
             elif event.key == pygame.K_RIGHT:
                 player.RIGHT_KEY = True
+            elif event.key == pygame.K_UP:
+                player.UP_KEY = True
+            elif event.key == pygame.K_DOWN:
+                player.DOWN_KEY = True
             elif event.key == pygame.K_SPACE:
                 player.jump()
+            elif event.key == pygame.K_w:
+                player.digging = True
 
 
         if event.type == pygame.KEYUP:
@@ -46,10 +54,16 @@ while running:
                 player.LEFT_KEY = False
             elif event.key == pygame.K_RIGHT:
                 player.RIGHT_KEY = False
+            elif event.key == pygame.K_UP:
+                player.UP_KEY = False
+            elif event.key == pygame.K_DOWN:
+                player.DOWN_KEY = False
             elif event.key == pygame.K_SPACE:
                 if player.is_jumping:
                     player.velocity.y *= .25
                     player.is_jumping = False
+            elif event.key == pygame.K_w:
+                player.digging = False
 
 
     ################################# UPDATE/ Animate SPRITE #################################

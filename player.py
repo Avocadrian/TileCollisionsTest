@@ -5,8 +5,8 @@ import keyboard
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.LEFT_KEY, self.RIGHT_KEY, self.FACING_LEFT = False, False, False
-        self.is_jumping, self.on_ground = False, False
+        self.LEFT_KEY, self.RIGHT_KEY, self.DOWN_KEY, self.UP_KEY, self.FACING_LEFT = False, False, False, False, False
+        self.is_jumping, self.on_ground, self.digging = False, False, False
         self.gravity, self.friction = .35, -.12
         self.image = Spritesheet('spritesheet.png').parse_sprite('chick.png')
         self.rect = self.image.get_rect()
@@ -36,7 +36,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = self.position.x
 
     def vertical_movement(self,dt):
-        print("vert: ", self.acceleration.y, self.velocity.y)
+#        print("vert: ", self.acceleration.y, self.velocity.y)
         self.velocity.y += self.acceleration.y * dt
         if self.velocity.y > 7: self.velocity.y = 7
         self.position.y += self.velocity.y * dt + (self.acceleration.y * .5) * (dt * dt)
@@ -82,19 +82,19 @@ class Player(pygame.sprite.Sprite):
     def checkCollisionsx(self, tiles):
         collisions = self.get_hit_index(tiles)
         fastcollisions = []
-        digging = 0
+        facingWall = False
         for i in collisions:
             if self.velocity.x > 0:  # Hit tile moving right
                 self.position.x = tiles[i].rect.left - self.rect.w
                 self.rect.x = self.position.x
-                if keyboard.is_pressed("right"):
-                    digging = 1
+                if self.RIGHT_KEY:
+                    facingWall = True
             elif self.velocity.x < 0:  # Hit tile moving left
                 self.position.x = tiles[i].rect.right
                 self.rect.x = self.position.x
-                if keyboard.is_pressed("left"):
-                    digging = 1
-            if keyboard.is_pressed("w") and digging == 1:
+                if self.LEFT_KEY:
+                    facingWall = True
+            if self.digging == True and facingWall:
                 fastcollisions.append(i)
             self.velocity.x = 0
         return fastcollisions
@@ -106,7 +106,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.bottom += 1
         collisions = self.get_hit_index(tiles)
         fastcollisions = []
-        digging=0
+        facingWall=False
         for i in collisions:
             if self.velocity.y > 0:  # Hit tile from the top
                 self.on_ground = True
@@ -114,15 +114,16 @@ class Player(pygame.sprite.Sprite):
                 self.velocity.y = 0
                 self.position.y = tiles[i].rect.top
                 self.rect.bottom = self.position.y
-                if keyboard.is_pressed("down"):
-                    digging=1
+                if self.DOWN_KEY:
+                    facingWall = True
             elif self.velocity.y < 0:  # Hit tile from the bottom
                 self.velocity.y = 0
                 self.position.y = tiles[i].rect.bottom + self.rect.h
                 self.rect.bottom = self.position.y
-                if keyboard.is_pressed("up"):
-                    digging = 1
-            if keyboard.is_pressed("w") and digging == 1:
+                if self.UP_KEY:
+                    facingWall = True
+#            if keyboard.is_pressed("w") and digging == 1:
+            if self.digging and facingWall:
                 fastcollisions.append(i)
         return fastcollisions
 
