@@ -2,12 +2,13 @@ import pygame, csv, os, random
 tiles = 0
 
 class Tile(pygame.sprite.Sprite):
-    def __init__(self, image, x, y, spritesheet):
+    def __init__(self, image, x, y, spritesheet, tiletype):
         pygame.sprite.Sprite.__init__(self)
         self.image = spritesheet.parse_sprite(image)
         # Manual load in: self.image = pygame.image.load(image)
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = x, y
+        self.tiletype = tiletype
 
     def draw(self, surface):
         surface.blit(self.image, (self.rect.x, self.rect.y))
@@ -140,12 +141,16 @@ class TileMap():
                 if y == height - 1:
                     ran = 1
 
-                if field > -0.6:
-#                if field > 0.5:
-                    ran = 1
                 if field > 0:
+#                if field > 0.5:
+                    ran = 2
+                elif field > -0.6:
 #                if field > 0.95:
-                    ran = 0
+                    ran = 1
+                elif field > -1.2:
+                    ran = 3
+                else:
+                    ran = 4
                 if x == 0   and y == 0:
                     ran = 0
                 if (x == 0 or x == 1) and y == 1:
@@ -153,9 +158,13 @@ class TileMap():
                 #                if ran == range(0, 5):
                 #                    self.start_x, self.start_y = x * self.tile_size, y * self.tile_size
                 if ran == 1:
-                    tiles.append(Tile('grass.png', x * self.tile_size, y * self.tile_size, self.spritesheet))
+                    tiles.append(Tile('grass.png', x * self.tile_size, y * self.tile_size, self.spritesheet, 1))
                 if ran == 2:
-                    tiles.append(Tile('grass2.png', x * self.tile_size, y * self.tile_size, self.spritesheet))
+                    tiles.append(Tile('grass2.png', x * self.tile_size, y * self.tile_size, self.spritesheet, 2))
+                if ran == 3:
+                    tiles.append(Tile('cave1.png', x * self.tile_size, y * self.tile_size, self.spritesheet, 3))
+                if ran == 4:
+                    tiles.append(Tile('cave2.png', x * self.tile_size, y * self.tile_size, self.spritesheet, 4))
                 self.map_matrix[y*self.cols+x] = ran
 #                print("xy", y, x, y*self.cols+x)
 #                print(ran)
@@ -174,7 +183,10 @@ class TileMap():
         tileIndices.sort()
         numCollisions = 0
         for i in tileIndices:
-            self.tiles.pop(i-numCollisions)
+            y = int(i / self.cols)
+            x = i % self.cols+1
+            self.tiles[i] = Tile('cave1.png', x * self.tile_size, y * self.tile_size, self.spritesheet, 3)
+#            self.tiles.pop(i-numCollisions)
             numCollisions += 1
         if numCollisions > 0:
             self.load_map()

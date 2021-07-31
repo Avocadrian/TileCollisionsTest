@@ -54,16 +54,18 @@ class Player(pygame.sprite.Sprite):
     def get_hits(self, tiles):
         hits = []
         for tile in tiles:
-            if self.rect.colliderect(tile):
-                hits.append(tile)
+            if(tile.tiletype == 1 or tile.tiletype == 2):
+                if self.rect.colliderect(tile):
+                    hits.append(tile)
         return hits
 
     def get_hit_index(self, tiles):
         hits = []
         i = 0
         for tile in tiles:
-            if self.rect.colliderect(tile):
-                hits.append(i)
+            if(tile.tiletype == 1 or tile.tiletype == 2):
+                if self.rect.colliderect(tile):
+                    hits.append(i)
             i += 1
         return hits
 
