@@ -1,4 +1,5 @@
 import pygame
+import time
 from spritesheet import Spritesheet
 
 class Player(pygame.sprite.Sprite):
@@ -7,13 +8,44 @@ class Player(pygame.sprite.Sprite):
         self.LEFT_KEY, self.RIGHT_KEY, self.DOWN_KEY, self.UP_KEY, self.FACING_LEFT = False, False, False, False, False
         self.is_jumping, self.on_ground, self.digging = False, False, False
         self.gravity, self.friction = .35, -.12
-        self.image = Spritesheet('spritesheet.png').parse_sprite('chick.png')
-        self.rect = self.image.get_rect()
+        self.idle_1 = Spritesheet('Player.png').parse_sprite('playerIdle1.png')
+        self.idle_2 = Spritesheet('Player.png').parse_sprite('playerIdle2.png')
+        self.idle_3 = Spritesheet('Player.png').parse_sprite('playerIdle3.png')
+        self.rect = self.idle_1.get_rect()
         self.position, self.velocity = pygame.math.Vector2(0,0), pygame.math.Vector2(0,0)
         self.acceleration = pygame.math.Vector2(0,self.gravity)
+        self.walking_l1 = Spritesheet('Player.png').parse_sprite('playerWalk1.png')
+        self.walking_l2 = Spritesheet('Player.png').parse_sprite('playerWalk2.png')
+        self.time_1 = time.time()
+        self.time_2 = time.time()
 
     def draw(self, display):
-        display.blit(self.image, (self.rect.x, self.rect.y))
+        if self.on_ground == False:
+            display.blit(self.idle_2, (self.rect.x, self.rect.y))
+        elif self.LEFT_KEY == True:
+            if time.time() - self.time_2 < 0.333:
+                display.blit(self.walking_l1, (self.rect.x, self.rect.y))
+            if time.time() -self.time_2 > 0.333:
+                display.blit(self.walking_l2, (self.rect.x, self.rect.y))
+            if time.time() -self.time_2 > 0.666:
+                self.time_2 = time.time()
+        elif self.RIGHT_KEY == True:
+            if time.time() - self.time_2 < 0.333:
+                display.blit(self.walking_l1, (self.rect.x, self.rect.y))
+            if time.time() - self.time_2 > 0.333:
+                display.blit(self.walking_l2, (self.rect.x, self.rect.y))
+            if time.time() - self.time_2 > 0.666:
+                self.time_2 = time.time()
+        else:
+            if time.time() - self.time_1 < 0.666:
+                display.blit(self.idle_1, (self.rect.x, self.rect.y))
+            elif time.time() - self.time_1 > 0.666 and time.time() - self.time_1 < 0.999:
+                display.blit(self.idle_2, (self.rect.x, self.rect.y))
+            elif time.time() - self.time_1 > 0.999:
+                display.blit(self.idle_3, (self.rect.x, self.rect.y))
+                if time.time() - self.time_1 > 1.333:
+                    self.time_1 = time.time()
+
 
     def update(self, dt, tiles):
         self.horizontal_movement(dt)
