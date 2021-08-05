@@ -18,6 +18,9 @@ class Player(pygame.sprite.Sprite):
         self.walking_l2 = Spritesheet('Player.png').parse_sprite('playerWalk2.png')
         self.time_1 = time.time()
         self.time_2 = time.time()
+        self.life = 3
+        self.gems = 0
+        self.money = 0
 
     def draw(self, display):
         if self.on_ground == False:
@@ -52,6 +55,16 @@ class Player(pygame.sprite.Sprite):
         removeCollisions = self.checkCollisionsx(tiles)
         self.vertical_movement(dt)
         removeCollisions = removeCollisions + self.checkCollisionsy(tiles)
+        numR = 0
+        for i in range(0, len(removeCollisions)):
+            i -= numR
+            if tiles[removeCollisions[i]].tiletype == 6:
+                removeCollisions.pop(i)
+                numR += 1
+            elif tiles[removeCollisions[i]].tiletype == 7:
+                self.gems += 1
+                print(self.gems)
+                #numR += 1
         return(removeCollisions)
 
     def horizontal_movement(self,dt):
@@ -72,6 +85,13 @@ class Player(pygame.sprite.Sprite):
         if self.velocity.y > 7: self.velocity.y = 7
         self.position.y += self.velocity.y * dt + (self.acceleration.y * .5) * (dt * dt)
         self.rect.bottom = self.position.y
+        if self.gems > 0:
+            if self.position.x > -16.0 and self.position.x < 16 and self.position.y < 17:
+                self.money += self.gems * 10
+                self.gems = 0
+                print("you have sold your gems")
+                print("you now have", self.money, "$")
+
 
     def limit_velocity(self, max_vel):
         self.velocity.x = max(-max_vel, min(self.velocity.x, max_vel))
@@ -86,7 +106,7 @@ class Player(pygame.sprite.Sprite):
     def get_hits(self, tiles):
         hits = []
         for tile in tiles:
-            if(tile.tiletype == 1 or tile.tiletype == 2):
+            if tile.tiletype == 1 or tile.tiletype == 2 or tile.tiletype == 6 or tile.tiletype == 7:
                 if self.rect.colliderect(tile):
                     hits.append(tile)
         return hits
@@ -94,10 +114,15 @@ class Player(pygame.sprite.Sprite):
     def get_hit_index(self, tiles):
         hits = []
         i = 0
-        for tile in tiles:
-            if(tile.tiletype == 1 or tile.tiletype == 2):
+        for j in range(0, len(tiles)):
+            tile = tiles[i]
+            if tile.tiletype == 1 or tile.tiletype == 2 or tile.tiletype == 6 or tile.tiletype == 7:
                 if self.rect.colliderect(tile):
                     hits.append(i)
+            if tile.tiletype == 6:
+                if tiles[j-1].tiletype == 4:
+                    tiles[j-1].tiletype = 6
+
             i += 1
         return hits
 

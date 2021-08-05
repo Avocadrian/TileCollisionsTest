@@ -160,7 +160,15 @@ class TileMap():
                 if ran == 1:
                     tiles.append(Tile('grass.png', x * self.tile_size, y * self.tile_size, self.spritesheet, 1))
                 if ran == 2:
-                    tiles.append(Tile('grass2.png', x * self.tile_size, y * self.tile_size, self.spritesheet, 2))
+                    rando = random.random()
+                    if rando > 0.9:
+                        ran = 6
+                        tiles.append(Tile('lava.png', x * self.tile_size, y * self.tile_size, self.spritesheet, 6))
+                    elif rando > 0.8 and rando < 0.9:
+                        ran = 7
+                        tiles.append(Tile('grass.png', x * self.tile_size, y * self.tile_size, self.spritesheet, 7))
+                    else:
+                        tiles.append(Tile('grass2.png', x * self.tile_size, y * self.tile_size, self.spritesheet, 2))
                 if ran == 3:
                     tiles.append(Tile('cave1.png', x * self.tile_size, y * self.tile_size, self.spritesheet, 3))
                 if ran == 4:
